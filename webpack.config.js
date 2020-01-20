@@ -1,6 +1,11 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-module.exports = {
+const HTMLPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
+const isDev = process.env.NODE_ENV === 'development' // 判断当前环境是否为开发环境
+const config = {
+    target: 'web',
     entry: path.join(__dirname, 'src/index.js'),
     output: {
         filename: 'bundle.js',
@@ -69,5 +74,33 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(), // 该插件用于配合15.*版本以上的vue-loader
+        new HTMLPlugin(),
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: isDev ? '"development"' : '"prodection"'
+            }
+        })
     ]
 }
+
+// 根据开发环境还是部署环境进行处理
+
+if (isDev) {
+    config.devtool = '#cheap-module-eval-source-map' // 用于浏览器显示webpack处理后的文件的源文件（es6等代码被webpack处理后可能我们不认识）
+    config.devServer = {
+        port: 8000,
+        host: '0.0.0.0',
+        overlay: {
+            errors: true, // 编译报错显示在网页上
+        },
+        open: false, // webpack-dev-server启动后会自动打开浏览器（现在是关闭状态）
+        hot: true, // 改变一个组件代码时，不会从新渲染整个页面，只会渲染当前组件的代码
+    }
+    config.plugins.push( // 用于配合上边的hot属性，达到热更新功能
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+    )
+}
+
+
+module.exports = config;
