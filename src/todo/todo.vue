@@ -51,6 +51,7 @@ export default {
     },
     methods: {
         addTodo(e) {
+            if (!e.target.value) return;
             this.todos.unshift({
                 id: id++,
                 content: e.target.value,

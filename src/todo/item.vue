@@ -81,5 +81,3 @@ export default {
         cursor pointer
         outline none
 </style>
-
-

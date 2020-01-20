@@ -1,3 +1,4 @@
+// jsx页面无法写style样式，只能外引
 import '../assets/styles/footer.styl'
 
 export default {
